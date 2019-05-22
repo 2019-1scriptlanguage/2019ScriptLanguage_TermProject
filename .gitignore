@@ -1,0 +1,15 @@
+/__pycache__
+/build
+/dist
+*.spec
+*.exe
+*.ilk
+*.pdb
+*.obj
+*.log
+*.pch
+*.idb
+*.tlog
+*.lastbuildstate
+*.suo
+*.db
