@@ -1,7 +1,8 @@
 from tkinter import font
 import tkinter
 import http.client
-
+import smtplib
+from email.mime.text import MIMEText
 
 def extract_service_area_data(str_xml):
     from xml.etree import ElementTree
@@ -43,7 +44,9 @@ class FrameWindow:
         self.routeSearchButton = tkinter.Button(self.window, font=self.labelFont,
                                                 text="선택한 도로로\n휴게소를\n검색합니다.",
                                                 command=self.search_service_area)
-
+        self.email_button = tkinter.Button(self.window,font=(self.labelFont,13),text="전송",command=self.mail_send)
+        self.email_button.pack()
+        self.email_button.place(x=530,y=380)
         # 휴게소 목록 생성
         self.serviceListScrollbar = tkinter.Scrollbar(self.window)
         self.serviceListScrollbar2 = tkinter.Scrollbar(self.window)
@@ -59,6 +62,8 @@ class FrameWindow:
                                                     command=self.render_service_area_info)
         self.serviceAreaInfoButton2 = tkinter.Button(self.window, font=self.labelFont, text="선택한 휴게소\n정보 열람",
                                                     command=self.render_service_area_info2)
+        # 보낼 이메일 텍스트 적기
+
 
         # 휴게소 정보 텍스트 칸 생성
         self.gas_station_text = tkinter.Text(self.window, width=15, height=1, borderwidth=3, relief='solid')
@@ -71,7 +76,8 @@ class FrameWindow:
         self.diesel_text2 = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='solid')
         self.gasoline_text2 = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='solid')
         self.lpg_text2 = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='solid')
-
+        self.email_box = tkinter.Entry(self.window, font=self.labelFont, width=25,
+                                       borderwidth=3, relief='solid')
         self.service_area_data = {}  # 휴게소의 업체, 기름값 정보 등이 저장된 데이터 딕셔너리 초기화
         self.service_area_data2 = {}
 
@@ -86,6 +92,7 @@ class FrameWindow:
         self.create_service_area_listbox()
         self.create_service_area_listbox2()
         self.create_static_text_label()
+        self.initinputlabel()
 
     def create_route_listbox(self):
         self.routeListScrollbar.place(x=self.width - 170, y=self.height - 100, height=90)
@@ -160,7 +167,7 @@ class FrameWindow:
         tkinter.Label(self.window, font=self.labelFont, text="업체 : ").place(x=640, y=self.height - 500)
         self.oil_company_text2.place(x=720, y=self.height - 500)
         self.oil_company_text2.configure(state='disabled')
-        tkinter.Label(self.window, font=self.labelFont, text="경유(디젤) 가격").place(x=640, y=self.height - 400)
+        tkinter.Label(self.window, font=self.labelFont,text="경유(디젤) 가격").place(x=640, y=self.height - 400)
         self.diesel_text2.place(x=720, y=self.height - 370)
         self.diesel_text2.configure(state='disabled')
         tkinter.Label(self.window, font=self.labelFont, text="휘발유(가솔린) 가격").place(x=600, y=self.height - 300)
@@ -173,7 +180,11 @@ class FrameWindow:
 
         tkinter.Label(self.window, font=self.labelFont, text="휴게소를 검색할").place(x=5, y=self.height - 75)
         tkinter.Label(self.window, font=self.labelFont, text="도로를 클릭하세요.").place(x=5, y=self.height - 50)
-
+    def initinputlabel(self):
+        tkinter.Label(self.window, font=self.labelFont, text="전송할 이메일 입력").place(x=320, y=self.height - 250)
+        self.email_box.pack()
+        self.email_box.place(x=250, y=self.height - 220)
+        #self.email_box.configure(state='disabled')
     def create_service_area_listbox(self):
         self.serviceListScrollbar.pack()
         self.serviceListScrollbar.place(x=135, y=0, height=90)
@@ -432,6 +443,21 @@ class FrameWindow:
                     self.gasoline_text2.configure(state='disabled')
                     self.lpg_text2.configure(state='disabled')
                     break
+    def mail_send(self):
+        s = smtplib.SMTP('smtp.gmail.com',587)
+        s.ehlo()
+        s.starttls()
+        sendAdress = 'rejal6457@gmail.com'
+        password = ''
+        s.login(sendAdress,password)
+        receiveAdress = self.email_box.get()
+        msgText = '휴게소 이름'
+        msg = MIMEText(msgText)
+        msg['Subject'] = '제목'
+        msg['To'] = receiveAdress
+        s.sendmail(sendAdress,receiveAdress,msg.as_string())
+        s.quit()
+
 
 
 tk = FrameWindow()
