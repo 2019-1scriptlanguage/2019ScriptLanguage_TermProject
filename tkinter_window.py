@@ -46,21 +46,34 @@ class FrameWindow:
 
         # 휴게소 목록 생성
         self.serviceListScrollbar = tkinter.Scrollbar(self.window)
+        self.serviceListScrollbar2 = tkinter.Scrollbar(self.window)
         self.serviceAreaListbox = \
             tkinter.Listbox(self.window, font=self.labelFont, activestyle='none', width=10, height=3, borderwidth=5,
                             relief='flat', yscrollcommand=self.serviceListScrollbar.set)
+        self.serviceAreaListbox2 = \
+            tkinter.Listbox(self.window, font=self.labelFont, activestyle='none', width=10, height=3, borderwidth=5,
+                            relief='flat', yscrollcommand=self.serviceListScrollbar2.set)
 
         # 선택한 휴게소 정보 보기 버튼 생성
         self.serviceAreaInfoButton = tkinter.Button(self.window, font=self.labelFont, text="선택한 휴게소\n정보 열람",
                                                     command=self.render_service_area_info)
+        self.serviceAreaInfoButton2 = tkinter.Button(self.window, font=self.labelFont, text="선택한 휴게소\n정보 열람",
+                                                    command=self.render_service_area_info2)
 
         # 휴게소 정보 텍스트 칸 생성
+        self.gas_station_text = tkinter.Text(self.window, width=15, height=1, borderwidth=3, relief='solid')
         self.oil_company_text = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='groove')
-        self.diesel_text = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='raised')
+        self.diesel_text = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='solid')
         self.gasoline_text = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='solid')
-        self.lpg_text = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='sunken')
+        self.lpg_text = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='solid')
+        self.gas_station_text2 = tkinter.Text(self.window, width=15, height=1, borderwidth=3, relief='solid')
+        self.oil_company_text2 = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='groove')
+        self.diesel_text2 = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='solid')
+        self.gasoline_text2 = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='solid')
+        self.lpg_text2 = tkinter.Text(self.window, width=10, height=1, borderwidth=3, relief='solid')
 
         self.service_area_data = {}  # 휴게소의 업체, 기름값 정보 등이 저장된 데이터 딕셔너리 초기화
+        self.service_area_data2 = {}
 
         self.create_tk()    # 멤버 변수 초기화 이외의 tk 윈도우 프레임 조립
 
@@ -71,6 +84,7 @@ class FrameWindow:
         self.window.geometry(str(self.width)+'x'+str(self.height))
         self.create_route_listbox()
         self.create_service_area_listbox()
+        self.create_service_area_listbox2()
         self.create_static_text_label()
 
     def create_route_listbox(self):
@@ -125,6 +139,8 @@ class FrameWindow:
         self.routeListBox.insert(600, "부산외곽순환고속도로")
 
     def create_static_text_label(self):
+        self.gas_station_text.place(x=50, y=self.height - 450)
+        self.gas_station_text.configure(state='disabled')
         tkinter.Label(self.window, font=self.labelFont, text="업체 : ").place(x=10, y=self.height - 500)
         self.oil_company_text.place(x=100, y=self.height - 500)
         self.oil_company_text.configure(state='disabled')
@@ -137,6 +153,24 @@ class FrameWindow:
         tkinter.Label(self.window, font=self.labelFont, text="LPG 가격").place(x=10, y=self.height - 200)
         self.lpg_text.place(x=10, y=self.height - 170)
         self.lpg_text.configure(state='disabled')
+
+        #왼쪽
+        self.gas_station_text2.place(x=650, y=self.height - 450)
+        self.gas_station_text2.configure(state='disabled')
+        tkinter.Label(self.window, font=self.labelFont, text="업체 : ").place(x=640, y=self.height - 500)
+        self.oil_company_text2.place(x=720, y=self.height - 500)
+        self.oil_company_text2.configure(state='disabled')
+        tkinter.Label(self.window, font=self.labelFont, text="경유(디젤) 가격").place(x=640, y=self.height - 400)
+        self.diesel_text2.place(x=720, y=self.height - 370)
+        self.diesel_text2.configure(state='disabled')
+        tkinter.Label(self.window, font=self.labelFont, text="휘발유(가솔린) 가격").place(x=600, y=self.height - 300)
+        self.gasoline_text2.place(x=720, y=self.height - 270)
+        self.gasoline_text2.configure(state='disabled')
+        tkinter.Label(self.window, font=self.labelFont, text="LPG 가격").place(x=710, y=self.height - 200)
+        self.lpg_text2.place(x=720, y=self.height - 170)
+        self.lpg_text2.configure(state='disabled')
+
+
         tkinter.Label(self.window, font=self.labelFont, text="휴게소를 검색할").place(x=5, y=self.height - 75)
         tkinter.Label(self.window, font=self.labelFont, text="도로를 클릭하세요.").place(x=5, y=self.height - 50)
 
@@ -150,7 +184,16 @@ class FrameWindow:
 
         self.serviceAreaInfoButton.pack()
         self.serviceAreaInfoButton.place(x=155, y=1)
+    def create_service_area_listbox2(self):
+        self.serviceListScrollbar2.pack()
+        self.serviceListScrollbar2.place(x=780, y=0, height=90)
 
+        self.serviceAreaListbox2.pack()
+        self.serviceAreaListbox2.place(x=660, y=0)
+        self.serviceListScrollbar2.config(command=self.serviceAreaListbox2.yview)
+
+        self.serviceAreaInfoButton2.pack()
+        self.serviceAreaInfoButton2.place(x=510, y=1)
     def search_service_area(self):
         if self.routeListBox.curselection() is not ():
             search_index = self.routeListBox.curselection()[0]
@@ -311,10 +354,16 @@ class FrameWindow:
         # print(req.status, req.reason)
         self.service_area_data.clear()
         self.service_area_data = extract_service_area_data(req.read().decode('utf-8'))
+        #self.service_area_data2.clear()
+        #self.service_area_data2 = extract_service_area_data(req.read().decode('utf-8'))
         # 이전에 검색했던 휴게소 데이터 리스트를 싹 청소한다.
         self.serviceAreaListbox.delete(0, self.serviceAreaListbox.size())
+        self.serviceAreaListbox2.delete(0, self.serviceAreaListbox2.size())
         for service_area_index in self.service_area_data:
             self.serviceAreaListbox.insert(service_area_index,
+                                           self.service_area_data[service_area_index]["serviceAreaName"])
+        for service_area_index in self.service_area_data:
+            self.serviceAreaListbox2.insert(service_area_index,
                                            self.service_area_data[service_area_index]["serviceAreaName"])
 
     def render_service_area_info(self):
@@ -322,10 +371,12 @@ class FrameWindow:
             search_index = self.serviceAreaListbox.curselection()[0]
             for service_area_index in self.service_area_data:
                 if service_area_index == search_index:
+                    self.gas_station_text.configure(state='normal')
                     self.oil_company_text.configure(state='normal')
                     self.diesel_text.configure(state='normal')
                     self.gasoline_text.configure(state='normal')
                     self.lpg_text.configure(state='normal')
+                    self.gas_station_text.delete(0.0, tkinter.END)
                     self.oil_company_text.delete(0.0, tkinter.END)
                     self.diesel_text.delete(0.0, tkinter.END)
                     self.gasoline_text.delete(0.0, tkinter.END)
@@ -334,18 +385,52 @@ class FrameWindow:
                     # print(self.service_area_data[service_area_index])
 
                     self.oil_company_text.insert(tkinter.INSERT,
-                                                 self.service_area_data[service_area_index]["oilCompany"])
+                                                  self.service_area_data[service_area_index]["oilCompany"])
                     self.diesel_text.insert(tkinter.INSERT,
-                                            self.service_area_data[service_area_index]["Diesel"])
+                                             self.service_area_data[service_area_index]["Diesel"])
                     self.gasoline_text.insert(tkinter.INSERT,
-                                              self.service_area_data[service_area_index]["Gasoline"])
+                                               self.service_area_data[service_area_index]["Gasoline"])
                     self.lpg_text.insert(tkinter.INSERT,
-                                         self.service_area_data[service_area_index]["LPG"])
-
+                                          self.service_area_data[service_area_index]["LPG"])
+                    self.gas_station_text.insert(tkinter.INSERT,
+                                                  self.service_area_data[service_area_index]["serviceAreaName"])
                     self.oil_company_text.configure(state='disabled')
                     self.diesel_text.configure(state='disabled')
                     self.gasoline_text.configure(state='disabled')
                     self.lpg_text.configure(state='disabled')
+                    break
+    def render_service_area_info2(self):
+        if self.serviceAreaListbox2.curselection() is not ():
+            search_index = self.serviceAreaListbox2.curselection()[0]
+            for service_area_index in self.service_area_data:
+                if service_area_index == search_index:
+                    self.gas_station_text2.configure(state='normal')
+                    self.oil_company_text2.configure(state='normal')
+                    self.diesel_text2.configure(state='normal')
+                    self.gasoline_text2.configure(state='normal')
+                    self.lpg_text2.configure(state='normal')
+                    self.gas_station_text2.delete(0.0, tkinter.END)
+                    self.oil_company_text2.delete(0.0, tkinter.END)
+                    self.diesel_text2.delete(0.0, tkinter.END)
+                    self.gasoline_text2.delete(0.0, tkinter.END)
+                    self.lpg_text2.delete(0.0, tkinter.END)
+
+                    # print(self.service_area_data[service_area_index])
+
+                    self.oil_company_text2.insert(tkinter.INSERT,
+                                                 self.service_area_data[service_area_index]["oilCompany"])
+                    self.diesel_text2.insert(tkinter.INSERT,
+                                            self.service_area_data[service_area_index]["Diesel"])
+                    self.gasoline_text2.insert(tkinter.INSERT,
+                                              self.service_area_data[service_area_index]["Gasoline"])
+                    self.lpg_text2.insert(tkinter.INSERT,
+                                         self.service_area_data[service_area_index]["LPG"])
+                    self.gas_station_text2.insert(tkinter.INSERT,
+                                                 self.service_area_data[service_area_index]["serviceAreaName"])
+                    self.oil_company_text2.configure(state='disabled')
+                    self.diesel_text2.configure(state='disabled')
+                    self.gasoline_text2.configure(state='disabled')
+                    self.lpg_text2.configure(state='disabled')
                     break
 
 
