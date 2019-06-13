@@ -49,7 +49,7 @@ class FrameWindow:
         # 이메일 버튼 생성
         self.email_button = tkinter.Button(self.window, font=(self.labelFont, 13), text="전송", command=self.mail_send)
         self.email_button.pack()
-        self.email_button.place(x=530, y=380)
+        self.email_button.place(x=530, y=self.height-470)
 
         # 휴게소 목록 생성
         self.serviceListScrollbar = tkinter.Scrollbar(self.window)
@@ -183,11 +183,12 @@ class FrameWindow:
 
         tkinter.Label(self.window, font=self.labelFont, text="휴게소를 검색할").place(x=5, y=self.height - 75)
         tkinter.Label(self.window, font=self.labelFont, text="도로를 클릭하세요.").place(x=5, y=self.height - 50)
+        tkinter.Label(self.window,font=self.labelFont,text="VS").place(x = 400,y=self.height - 580)
 
     def init_input_label(self):
-        tkinter.Label(self.window, font=self.labelFont, text="전송할 이메일 입력").place(x=320, y=self.height - 250)
+        tkinter.Label(self.window, font=self.labelFont, text="전송할 이메일 입력").place(x=320, y=self.height - 500)
         self.email_box.pack()
-        self.email_box.place(x=250, y=self.height - 220)
+        self.email_box.place(x=250, y=self.height - 470)
         # self.email_box.configure(state='disabled')
 
     def create_service_area_listbox(self):
