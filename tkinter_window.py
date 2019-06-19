@@ -4,6 +4,7 @@ import http.client
 import smtplib
 from email.mime.text import MIMEText
 import googleMap
+import time
 
 
 def extract_service_area_data(str_xml):
@@ -574,38 +575,70 @@ class FrameWindow:
         s.quit()
 
     def compare_price(self):
+        l_ga = 0
+        l_di = 0
+        l_lp = 0
         if self.left_Diesel < self.right_Diesel:
-            self.Diesel_canvas.delete("graph")
-            self.Diesel_canvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
-
+            while(l_di < self.left_Diesel):
+                time.sleep(0.025)
+                self.Diesel_canvas.delete("graph")
+                self.Diesel_canvas.create_rectangle(0, 0, (l_di * 400) / 2000, 60, fill="red", tag="graph")
+                l_di += 50
+                self.Diesel_canvas.update()
         elif self.left_Diesel > self.right_Diesel:
-            self.Diesel_canvas.delete("graph")
-            self.Diesel_canvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
-                                                tag="graph")
+            while (l_di < self.right_Diesel):
+                time.sleep(0.025)
+                self.Diesel_canvas.delete("graph")
+                self.Diesel_canvas.create_rectangle(800, 0, 800 - ((l_di * 400) / 2000), 60, fill="blue",
+                                                    tag="graph")
+                l_di += 50
+                self.Diesel_canvas.update()
+
         else:
             self.Diesel_canvas.delete("graph")
             self.Diesel_canvas.create_rectangle(0, 0, 800, 60, fill="green",
                                                 tag="graph")
 
         if self.left_Gasoline < self.right_Gasoline:
-            self.Gasoline_canvas.delete("graph")
-            self.Gasoline_canvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
+            while(l_ga < self.left_Gasoline):
+                time.sleep(0.025)
+                self.Gasoline_canvas.delete("graph")
+                self.Gasoline_canvas.create_rectangle(0, 0, (l_ga * 400) / 2000, 60, fill="red",
+                                                      tag="graph")
+                l_ga += 50
+                self.Gasoline_canvas.update()
+
 
         elif self.left_Gasoline > self.right_Gasoline:
-            self.Gasoline_canvas.delete("graph")
-            self.Gasoline_canvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
-                                                  tag="graph")
+            while (l_ga < self.right_Gasoline):
+                time.sleep(0.025)
+                self.Gasoline_canvas.delete("graph")
+                self.Gasoline_canvas.create_rectangle(800, 0, 800 - ((l_ga * 400) / 2000), 60, fill="blue",
+                                                      tag="graph")
+                l_ga += 50
+                self.Gasoline_canvas.update()
+
         else:
             self.Gasoline_canvas.delete("graph")
             self.Gasoline_canvas.create_rectangle(0, 0, 800, 60, fill="green", tag="graph")
 
         if self.left_LPG < self.right_LPG:
-            self.LPG_canvas.delete("graph")
-            self.LPG_canvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
+            while(l_lp < self.left_LPG):
+                time.sleep(0.025)
+                self.LPG_canvas.delete("graph")
+                self.LPG_canvas.create_rectangle(0, 0, (l_lp * 400) / 2000, 60, fill="red", tag="graph")
+                l_lp += 50
+                self.LPG_canvas.update()
+
         elif self.left_LPG > self.right_LPG:
-            self.LPG_canvas.delete("graph")
-            self.LPG_canvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
-                                             tag="graph")
+            while (l_lp < self.right_LPG):
+                time.sleep(0.025)
+                self.LPG_canvas.delete("graph")
+                self.LPG_canvas.create_rectangle(800, 0, 800 - ((l_lp * 400) / 2000), 60, fill="blue",
+                                                 tag="graph")
+                l_lp += 50
+                self.LPG_canvas.update()
+
         else:
             self.LPG_canvas.delete("graph")
             self.LPG_canvas.create_rectangle(0, 0, 800, 60, fill="green", tag="graph")
