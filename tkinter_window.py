@@ -37,6 +37,22 @@ class FrameWindow:
         self.labelFont = font.Font(self.window, size=15, weight='bold', family='Consolas')
         self.search_index1, self.search_index2 = -1, -1
 
+        #값 비교 용도 변수
+        self.left_Diesel = 0
+        self.left_Gasoline = 0
+        self.left_LPG = 0
+
+        self.right_Diesel = 0
+        self.right_Gasoline = 0
+        self.right_LPG = 0
+        self.Dieselcanvas = tkinter.Canvas(self.window, relief="solid", width=800, height=60)
+        self.Dieselcanvas.place(x=0, y=self.height - 405)
+
+        self.Galsolinecanvas = tkinter.Canvas(self.window, relief="solid", width=800, height=60)
+        self.Galsolinecanvas.place(x=0, y=self.height - 305)
+
+        self.LPGcanvas = tkinter.Canvas(self.window, relief="solid", width=800, height=60)
+        self.LPGcanvas.place(x=0, y = self.height - 205)
         # 노선 목록 생성
         self.routeListScrollbar = tkinter.Scrollbar(self.window)
         self.routeListBox = tkinter.Listbox(self.window, font=self.labelFont, activestyle='none', width=37, height=3,
@@ -96,6 +112,7 @@ class FrameWindow:
         self.create_service_area_listbox2()
         self.create_static_text_label()
         self.init_input_label()
+
 
     def create_route_listbox(self):
         self.routeListScrollbar.place(x=self.width - 170, y=self.height - 100, height=90)
@@ -407,16 +424,28 @@ class FrameWindow:
                                                  self.service_area_data[service_area_index]["oilCompany"])
                     self.diesel_text.insert(tkinter.INSERT,
                                             self.service_area_data[service_area_index]["Diesel"])
+                    self.left_Diesel = self.service_area_data[service_area_index]["Diesel"].replace("원","")
+                    self.left_Diesel = int(self.left_Diesel.replace(",", ""))
+
                     self.gasoline_text.insert(tkinter.INSERT,
                                               self.service_area_data[service_area_index]["Gasoline"])
+                    self.left_Gasoline = self.service_area_data[service_area_index]["Gasoline"].replace("원","")
+                    self.left_Gasoline = int(self.left_Gasoline.replace(",", ""))
                     self.lpg_text.insert(tkinter.INSERT,
                                          self.service_area_data[service_area_index]["LPG"])
+                    if(self.service_area_data[service_area_index]["LPG"] != "X"):
+                        self.left_LPG = self.service_area_data[service_area_index]["LPG"].replace("원", "")
+                        self.left_LPG = int(self.left_LPG.replace(",", ""))
+                    else:
+                        self.left_LPG = 0
                     self.gas_station_text.insert(tkinter.INSERT,
                                                  self.service_area_data[service_area_index]["serviceAreaName"])
                     self.oil_company_text.configure(state='disabled')
                     self.diesel_text.configure(state='disabled')
                     self.gasoline_text.configure(state='disabled')
                     self.lpg_text.configure(state='disabled')
+                    self.compare_price()
+
                     break
 
     def render_service_area_info2(self):
@@ -441,16 +470,27 @@ class FrameWindow:
                                                   self.service_area_data[service_area_index]["oilCompany"])
                     self.diesel_text2.insert(tkinter.INSERT,
                                              self.service_area_data[service_area_index]["Diesel"])
+                    self.right_Diesel = self.service_area_data[service_area_index]["Diesel"].replace("원","")
+                    self.right_Diesel = int(self.right_Diesel.replace(",", ""))
+
                     self.gasoline_text2.insert(tkinter.INSERT,
                                                self.service_area_data[service_area_index]["Gasoline"])
+                    self.right_Gasoline = self.service_area_data[service_area_index]["Gasoline"].replace("원","")
+                    self.right_Gasoline = int(self.right_Gasoline.replace(",", ""))
                     self.lpg_text2.insert(tkinter.INSERT,
                                           self.service_area_data[service_area_index]["LPG"])
+                    if (self.service_area_data[service_area_index]["LPG"] != "X"):
+                        self.right_LPG = self.service_area_data[service_area_index]["LPG"].replace("원", "")
+                        self.right_LPG = int(self.right_LPG.replace(",", ""))
+                    else:
+                        self.right_LPG = 0
                     self.gas_station_text2.insert(tkinter.INSERT,
                                                   self.service_area_data[service_area_index]["serviceAreaName"])
                     self.oil_company_text2.configure(state='disabled')
                     self.diesel_text2.configure(state='disabled')
                     self.gasoline_text2.configure(state='disabled')
                     self.lpg_text2.configure(state='disabled')
+                    self.compare_price()
                     break
 
     def mail_send(self):
@@ -471,5 +511,41 @@ class FrameWindow:
         s.sendmail(send_address, receive_address, msg.as_string())
         s.quit()
 
+    def compare_price(self):
+        if self.left_Diesel < self.right_Diesel:
+            self.Dieselcanvas.delete("graph")
+            self.Dieselcanvas.create_rectangle(0, 0, (self.left_Diesel * 400)/2000, 60, fill="red", tag="graph")
+
+        elif self.left_Diesel > self.right_Diesel:
+            self.Dieselcanvas.delete("graph")
+            self.Dieselcanvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
+                                               tag="graph")
+        else:
+            self.Dieselcanvas.delete("graph")
+            self.Dieselcanvas.create_rectangle(0, 0, 800, 60, fill="green",
+                                               tag="graph")
+
+        if self.left_Gasoline < self.right_Gasoline:
+            self.Galsolinecanvas.delete("graph")
+            self.Galsolinecanvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
+
+        elif self.left_Gasoline > self.right_Gasoline:
+            self.Galsolinecanvas.delete("graph")
+            self.Galsolinecanvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
+                                               tag="graph")
+        else:
+            self.Galsolinecanvas.delete("graph")
+            self.Galsolinecanvas.create_rectangle(0, 0, 800, 60, fill="green", tag="graph")
+
+        if self.left_LPG < self.right_LPG:
+            self.LPGcanvas.delete("graph")
+            self.LPGcanvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
+        elif self.left_LPG > self.right_LPG:
+            self.LPGcanvas.delete("graph")
+            self.LPGcanvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
+                                               tag="graph")
+        else:
+            self.LPGcanvas.delete("graph")
+            self.LPGcanvas.create_rectangle(0, 0, 800, 60, fill="green", tag="graph")
 
 tk = FrameWindow()
