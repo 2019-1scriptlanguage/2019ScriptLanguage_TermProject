@@ -3,6 +3,7 @@ import tkinter
 import http.client
 import smtplib
 from email.mime.text import MIMEText
+import googleMap
 
 
 def extract_service_area_data(str_xml):
@@ -12,7 +13,7 @@ def extract_service_area_data(str_xml):
     table = {}
     i = 0
     for list_element in list_elements:
-        # route_name = list_element.find("routeName")  # 도로 검색.
+        route_name = list_element.find("routeName")  # 도로 검색.
         service_area_name = list_element.find("serviceAreaName")  # 휴게소 이름 검색
         oil_company = list_element.find("oilCompany")  # 업체 검색
         diesel_price = list_element.find("diselPrice")  # 경유 기름값, 원본 데이터셋이 disel 로 오타가 나있음
@@ -23,7 +24,8 @@ def extract_service_area_data(str_xml):
                     "oilCompany": oil_company.text,
                     "Diesel": diesel_price.text,
                     "Gasoline": gasoline_price.text,
-                    "LPG": lpg_price.text}
+                    "LPG": lpg_price.text,
+                    "routeName": route_name.text}
         i += 1
 
     return table
@@ -37,7 +39,7 @@ class FrameWindow:
         self.labelFont = font.Font(self.window, size=15, weight='bold', family='Consolas')
         self.search_index1, self.search_index2 = -1, -1
 
-        #값 비교 용도 변수
+        # 값 비교 용도 변수
         self.left_Diesel = 0
         self.left_Gasoline = 0
         self.left_LPG = 0
@@ -45,14 +47,14 @@ class FrameWindow:
         self.right_Diesel = 0
         self.right_Gasoline = 0
         self.right_LPG = 0
-        self.Dieselcanvas = tkinter.Canvas(self.window, relief="solid", width=800, height=60)
-        self.Dieselcanvas.place(x=0, y=self.height - 405)
+        self.Diesel_canvas = tkinter.Canvas(self.window, relief="solid", width=800, height=60)
+        self.Diesel_canvas.place(x=0, y=self.height - 405)
 
-        self.Galsolinecanvas = tkinter.Canvas(self.window, relief="solid", width=800, height=60)
-        self.Galsolinecanvas.place(x=0, y=self.height - 305)
+        self.Gasoline_canvas = tkinter.Canvas(self.window, relief="solid", width=800, height=60)
+        self.Gasoline_canvas.place(x=0, y=self.height - 305)
 
-        self.LPGcanvas = tkinter.Canvas(self.window, relief="solid", width=800, height=60)
-        self.LPGcanvas.place(x=0, y = self.height - 205)
+        self.LPG_canvas = tkinter.Canvas(self.window, relief="solid", width=800, height=60)
+        self.LPG_canvas.place(x=0, y =self.height - 205)
         # 노선 목록 생성
         self.routeListScrollbar = tkinter.Scrollbar(self.window)
         self.routeListBox = tkinter.Listbox(self.window, font=self.labelFont, activestyle='none', width=37, height=3,
@@ -112,7 +114,6 @@ class FrameWindow:
         self.create_service_area_listbox2()
         self.create_static_text_label()
         self.init_input_label()
-
 
     def create_route_listbox(self):
         self.routeListScrollbar.place(x=self.width - 170, y=self.height - 100, height=90)
@@ -200,7 +201,7 @@ class FrameWindow:
 
         tkinter.Label(self.window, font=self.labelFont, text="휴게소를 검색할").place(x=5, y=self.height - 75)
         tkinter.Label(self.window, font=self.labelFont, text="도로를 클릭하세요.").place(x=5, y=self.height - 50)
-        tkinter.Label(self.window,font=self.labelFont,text="VS").place(x = 400,y=self.height - 580)
+        tkinter.Label(self.window,font=self.labelFont, text="VS").place(x=400, y=self.height - 580)
 
     def init_input_label(self):
         tkinter.Label(self.window, font=self.labelFont, text="전송할 이메일 입력").place(x=320, y=self.height - 500)
@@ -433,7 +434,7 @@ class FrameWindow:
                     self.left_Gasoline = int(self.left_Gasoline.replace(",", ""))
                     self.lpg_text.insert(tkinter.INSERT,
                                          self.service_area_data[service_area_index]["LPG"])
-                    if(self.service_area_data[service_area_index]["LPG"] != "X"):
+                    if self.service_area_data[service_area_index]["LPG"] != "X":
                         self.left_LPG = self.service_area_data[service_area_index]["LPG"].replace("원", "")
                         self.left_LPG = int(self.left_LPG.replace(",", ""))
                     else:
@@ -446,6 +447,8 @@ class FrameWindow:
                     self.lpg_text.configure(state='disabled')
                     self.compare_price()
 
+                    self.hardcode_serviceArea(self.service_area_data[service_area_index]["serviceAreaName"],
+                                              self.service_area_data[service_area_index]["routeName"])
                     break
 
     def render_service_area_info2(self):
@@ -470,16 +473,16 @@ class FrameWindow:
                                                   self.service_area_data[service_area_index]["oilCompany"])
                     self.diesel_text2.insert(tkinter.INSERT,
                                              self.service_area_data[service_area_index]["Diesel"])
-                    self.right_Diesel = self.service_area_data[service_area_index]["Diesel"].replace("원","")
+                    self.right_Diesel = self.service_area_data[service_area_index]["Diesel"].replace("원", "")
                     self.right_Diesel = int(self.right_Diesel.replace(",", ""))
 
                     self.gasoline_text2.insert(tkinter.INSERT,
                                                self.service_area_data[service_area_index]["Gasoline"])
-                    self.right_Gasoline = self.service_area_data[service_area_index]["Gasoline"].replace("원","")
+                    self.right_Gasoline = self.service_area_data[service_area_index]["Gasoline"].replace("원", "")
                     self.right_Gasoline = int(self.right_Gasoline.replace(",", ""))
                     self.lpg_text2.insert(tkinter.INSERT,
                                           self.service_area_data[service_area_index]["LPG"])
-                    if (self.service_area_data[service_area_index]["LPG"] != "X"):
+                    if self.service_area_data[service_area_index]["LPG"] != "X":
                         self.right_LPG = self.service_area_data[service_area_index]["LPG"].replace("원", "")
                         self.right_LPG = int(self.right_LPG.replace(",", ""))
                     else:
@@ -491,7 +494,66 @@ class FrameWindow:
                     self.gasoline_text2.configure(state='disabled')
                     self.lpg_text2.configure(state='disabled')
                     self.compare_price()
+
+                    self.hardcode_serviceArea(self.service_area_data[service_area_index]["serviceAreaName"],
+                                              self.service_area_data[service_area_index]["routeName"])
                     break
+
+    def hardcode_serviceArea(self, serviceArea, routeName):
+        # 산기대 주유소 설
+        address = "경기도 시흥시 산기대학로 237"
+        if routeName == "경부선":
+            if serviceArea == "서울만남":
+                address = '서울특별시 서초구 양재2동 양재대로12길 73-71'
+            elif serviceArea == "기흥":
+                address = '경기도 용인시 기흥구 공세동 공세로 173'
+            elif serviceArea == "안성":
+                address = "경기도 안성시 원곡면 경부고속도로 372"
+            elif serviceArea == "망향":
+                address = "충청남도 천안시 서북구 성거읍 요방리 121"
+            elif serviceArea == "옥산":
+                address = "충청북도 청주시 흥덕구 옥산면 경부고속도로 309"
+            elif serviceArea == "천안":
+                address = "충청남도 천안시 동남구 수신면 신풍리 447-3"
+            elif serviceArea == "죽암":
+                address = "충청북도 청주시 서원구 현도면 경부고속도로 289"
+            elif serviceArea == "금강":
+                address = "충청북도 옥천군 동이면 금강로 596"
+            elif serviceArea == "황간":
+                address = "충청북도 영동군 황간면 회포길 102"
+            elif serviceArea == "추풍령":
+                address = "경상북도 김천시 봉산면 경부고속도로 214-1"
+            elif serviceArea == "평사":
+                address = "경상북도 경산시 진량읍 경부고속도로 105"
+            elif serviceArea == "칠곡":
+                address = "경상북도 칠곡군 왜관읍 경부고속도로 159"
+            elif serviceArea == "옥천":
+                address = "경기도 양평군 옥천면 아신리 384"
+            elif serviceArea == "경주":
+                address = "경상북도 경주시 내남면 경부고속도로 59"
+            elif serviceArea == "김천":
+                address = "경상북도 김천시 농소면 경부고속도로 193"
+            elif serviceArea == "통도사":
+                address = "경상남도 양산시 하북면 순지리 89-5"
+            elif serviceArea == "건천":
+                address = "경상북도 경주시 건천읍 경부고속도로 76"
+            elif serviceArea == "죽전":
+                address = "경기도 용인시 수지구 죽전2동 866-2"
+            elif serviceArea == "입장":
+                address = "충청남도 천안시 서북구 입장면 연곡길 407"
+            elif serviceArea == "경산":
+                address = "경상북도 경산시 남산면 갈지리 350-3"
+            elif serviceArea == "언양":
+                address = "울산광역시 울주군 언양읍 경부고속도로 44"
+            elif serviceArea == "양산":
+                address = "경상남도 양산시 동면 목장길 15-50"
+            elif serviceArea == "신탄진":
+                address = "대전광역시 대덕구 상서동 236-1"
+            elif serviceArea == "청주":
+                address = "장남리 옥산면 흥덕구 청주시 충청북도 284-16"
+
+            # 경부고속도로일때만 지도를 띄워라
+            googleMap.map_window(address)
 
     def mail_send(self):
         s = smtplib.SMTP('smtp.gmail.com', 587)
@@ -513,39 +575,40 @@ class FrameWindow:
 
     def compare_price(self):
         if self.left_Diesel < self.right_Diesel:
-            self.Dieselcanvas.delete("graph")
-            self.Dieselcanvas.create_rectangle(0, 0, (self.left_Diesel * 400)/2000, 60, fill="red", tag="graph")
+            self.Diesel_canvas.delete("graph")
+            self.Diesel_canvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
 
         elif self.left_Diesel > self.right_Diesel:
-            self.Dieselcanvas.delete("graph")
-            self.Dieselcanvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
-                                               tag="graph")
+            self.Diesel_canvas.delete("graph")
+            self.Diesel_canvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
+                                                tag="graph")
         else:
-            self.Dieselcanvas.delete("graph")
-            self.Dieselcanvas.create_rectangle(0, 0, 800, 60, fill="green",
-                                               tag="graph")
+            self.Diesel_canvas.delete("graph")
+            self.Diesel_canvas.create_rectangle(0, 0, 800, 60, fill="green",
+                                                tag="graph")
 
         if self.left_Gasoline < self.right_Gasoline:
-            self.Galsolinecanvas.delete("graph")
-            self.Galsolinecanvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
+            self.Gasoline_canvas.delete("graph")
+            self.Gasoline_canvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
 
         elif self.left_Gasoline > self.right_Gasoline:
-            self.Galsolinecanvas.delete("graph")
-            self.Galsolinecanvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
-                                               tag="graph")
+            self.Gasoline_canvas.delete("graph")
+            self.Gasoline_canvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
+                                                  tag="graph")
         else:
-            self.Galsolinecanvas.delete("graph")
-            self.Galsolinecanvas.create_rectangle(0, 0, 800, 60, fill="green", tag="graph")
+            self.Gasoline_canvas.delete("graph")
+            self.Gasoline_canvas.create_rectangle(0, 0, 800, 60, fill="green", tag="graph")
 
         if self.left_LPG < self.right_LPG:
-            self.LPGcanvas.delete("graph")
-            self.LPGcanvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
+            self.LPG_canvas.delete("graph")
+            self.LPG_canvas.create_rectangle(0, 0, (self.left_Diesel * 400) / 2000, 60, fill="red", tag="graph")
         elif self.left_LPG > self.right_LPG:
-            self.LPGcanvas.delete("graph")
-            self.LPGcanvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
-                                               tag="graph")
+            self.LPG_canvas.delete("graph")
+            self.LPG_canvas.create_rectangle(800, 0, 800 - ((self.left_Diesel * 400) / 2000), 60, fill="blue",
+                                             tag="graph")
         else:
-            self.LPGcanvas.delete("graph")
-            self.LPGcanvas.create_rectangle(0, 0, 800, 60, fill="green", tag="graph")
+            self.LPG_canvas.delete("graph")
+            self.LPG_canvas.create_rectangle(0, 0, 800, 60, fill="green", tag="graph")
+
 
 tk = FrameWindow()
